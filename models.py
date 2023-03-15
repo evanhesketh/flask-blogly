@@ -37,3 +37,11 @@ class User(db.Model):
         db.Text,
     )
 
+    def get_full_name(self):
+        """Returns concat of first and last name"""
+        if self.last_name:
+            return self.first_name + ' ' + self.last_name
+        else:
+            return self.first_name
+
+
