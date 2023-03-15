@@ -31,11 +31,9 @@ class User(db.Model):
     # Last name is optional for users
     last_name = db.Column(
         db.String(20),
-        nullable=True
     )
 
     image_url = db.Column(
-        db.String,
-        nullable=True
+        db.Text,
     )
 
