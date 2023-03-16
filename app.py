@@ -43,9 +43,14 @@ def add_new_user():
 
     if not first_name:
         flash('You must enter a first name')
-        return redirect("/users/new")
+        return redirect("/users/new") #TODO:render_template
 
-    new_user = User(first_name=first_name, last_name=last_name, image_url=image_url)
+    new_user = User(
+        first_name=first_name,
+        last_name=last_name,
+        image_url=image_url
+    )
+
     db.session.add(new_user)
     db.session.commit()
 
@@ -56,14 +61,14 @@ def show_user_info(user_id):
     """Shows info for a given user, button to edit and
     button to delete"""
 
-    user = User.query.filter(User.id == user_id).one()
+    user = User.query.filter(User.id == user_id).one() #TODO: get_or_404
     return render_template('user_detail.html', user=user)
 
 @app.get("/users/<int:user_id>/edit")
 def show_edit_user_page(user_id):
     """Shows edit page for a given user, button to cancel, button to save"""
 
-    user = User.query.filter(User.id == user_id).one()
+    user = User.query.filter(User.id == user_id).one() #TODO: get_or_404
     return render_template('edit_user.html', user=user)
 
 @app.post("/users/<int:user_id>/edit")
@@ -84,7 +89,7 @@ def submit_edit_user_form(user_id):
 def delete_user(user_id):
     """Deletes a given user"""
 
-    User.query.filter(User.id == user_id).delete()
+    User.query.filter(User.id == user_id).delete() #TODO: get_or_404
 
     db.session.commit()
 

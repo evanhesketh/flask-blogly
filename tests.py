@@ -63,6 +63,7 @@ class UserViewTestCase(TestCase):
 
     def test_show_add_user(self):
         """Tests that the add user form appears"""
+
         with self.client as c:
             resp = c.get("/users/new")
             self.assertEqual(resp.status_code, 200)
@@ -71,6 +72,7 @@ class UserViewTestCase(TestCase):
 
     def test_user_added(self):
         """Tests that user added to db"""
+
         with self.client as c:
             c.post('/users/new', data={"first-name": "Tester", "last-name": "Testerino", "image-url": 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s'})
             self.assertTrue(User.query.filter(User.first_name == "Tester").count() == 1)
@@ -78,9 +80,16 @@ class UserViewTestCase(TestCase):
             self.assertTrue(User.query.filter(User.image_url == "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s").count() == 1)
 
     def test_user_edit(self):
-        """Tests that a user's info is edited"""
+        """Tests that a user's info is edited in database"""
         with self.client as c:
             c.post(f"users/{self.user_id}/edit", data={"first-name": "Tester", "last-name": "Testerino", "image-url": 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s'})
             self.assertTrue(User.query.filter(User.first_name == "Tester").count() == 1)
             self.assertTrue(User.query.filter(User.last_name == "Testerino").count() == 1)
             self.assertTrue(User.query.filter(User.image_url == "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s").count() == 1)
+
+    def test_user_delete(self):
+        """Tests that a user's info is deleted from database"""
+
+        with self.client as c:
+            c.post(f"users/{self.user_id}/delete")
+            self.assertTrue(User.query.filter(User.id == self.user_id).count() == 0)
