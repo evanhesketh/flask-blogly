@@ -10,13 +10,13 @@
 
 <i>By {{post.user.get_full_name()}}</i>
 
-<a href="/posts">
+<a href="/users/{{post.user.id}}">
   <button>Cancel</button>
 </a>
-<a href="/users/{{post.user.id}}/posts/{{post.id}}/edit">
+<a href="/posts/{{post.id}}/edit">
   <button>Edit</button>
 </a>
-<form action="ADD ROUTE" method="POST">
+<form action="/posts/{{post.id}}/delete" method="POST">
   <button>Delete</button>
 </form>
 

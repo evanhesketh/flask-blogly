@@ -6,7 +6,11 @@
 
 <h1>Edit Post</h1>
 
-<form>
+{% for msg in get_flashed_messages() %}
+  <p>{{msg}}</p>
+{% endfor %}
+
+<form action="/posts/{{post.id}}/edit" method="POST">
   <div>
     <label for="title">Title: </label>
     <input id="title" name="title" type="text" value="{{post.title}}">
@@ -14,7 +18,9 @@
 
   <div>
     <label for="content">Content: </label>
-    <textarea id="content" name="content" type="text" value="{{post.content}}">
+    <textarea id="content" name="content" type="text">
+      {{post.content}}
+    </textarea>
   </div>
 
   <a href="/posts">

@@ -106,6 +106,7 @@ def delete_user(user_id):
 
     delete_user = User.query.get_or_404(user_id)
 
+    Post.query.filter(Post.user_id == user_id).delete()
     User.query.filter(User.id == user_id).delete() #NOTE: Returns a 405, not 404
 
     db.session.commit()
@@ -151,11 +152,36 @@ def show_post_details(post_id):
 def show_post_edit_form(post_id):
     """Shows the edit post form"""
 
+    post = Post.query.get_or_404(post_id)
+    return render_template("edit_post.html", post=post)
+
 @app.post("/posts/<int:post_id>/edit")
 def submit_post_edit_form(post_id):
     """Submits the edit form and updates post information,
     redirects to user details"""
 
+    post = Post.query.get_or_404(post_id)
+
+    title = request.form["title"]
+    content = request.form["content"]
+
+    if not title or not content:
+        flash("Posts must contain a title and text content")
+        return render_template("edit_post.html", post=post)
+
+    db.session.commit()
+
+    return redirect(f"/posts/{post.id}")
+
 @app.post("/posts/<int:post_id>/delete")
 def delete_post(post_id):
     """Deletes a given post and redirects to user details"""
+
+    delete_post = Post.query.get_or_404(post_id)
+    user_id = delete_post.user.id
+
+    Post.query.filter(Post.id == post_id).delete() #NOTE: Returns a 405, not 404
+
+    db.session.commit()
+
+    return redirect(f'/users/{user_id}')
