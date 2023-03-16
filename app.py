@@ -39,11 +39,18 @@ def add_new_user():
     """Process add user form and add user, redirects to /users"""
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
+    last_name = last_name if last_name else None
     image_url = request.form["image-url"]
+    image_url = image_url if image_url else None
 
     if not first_name:
         flash('You must enter a first name')
-        return redirect("/users/new") #TODO:render_template
+        return render_template(
+            "create_user.html",
+            first_name=first_name,
+            last_name=last_name,
+            image_url=image_url
+            )
 
     new_user = User(
         first_name=first_name,
@@ -61,25 +68,32 @@ def show_user_info(user_id):
     """Shows info for a given user, button to edit and
     button to delete"""
 
-    user = User.query.filter(User.id == user_id).one() #TODO: get_or_404
+    user = User.query.get_or_404(user_id)
     return render_template('user_detail.html', user=user)
 
 @app.get("/users/<int:user_id>/edit")
 def show_edit_user_page(user_id):
     """Shows edit page for a given user, button to cancel, button to save"""
 
-    user = User.query.filter(User.id == user_id).one() #TODO: get_or_404
+    user = User.query.get_or_404(user_id)
     return render_template('edit_user.html', user=user)
 
 @app.post("/users/<int:user_id>/edit")
 def submit_edit_user_form(user_id):
     """Submits and updates user information, redirects to /users"""
 
-    user = User.query.filter(User.id == user_id).one()
+    user = User.query.get_or_404(user_id)
 
     user.first_name = request.form["first-name"]
     user.last_name = request.form["last-name"]
     user.image_url = request.form["image-url"]
+
+    if not user.first_name:
+        flash('You must enter a first name')
+        return render_template(
+            "edit_user.html",
+            user=user
+            )
 
     db.session.commit()
 
@@ -89,7 +103,10 @@ def submit_edit_user_form(user_id):
 def delete_user(user_id):
     """Deletes a given user"""
 
-    User.query.filter(User.id == user_id).delete() #TODO: get_or_404
+
+    delete_user = User.query.get_or_404(user_id)
+
+    User.query.filter(User.id == user_id).delete() #NOTE: Returns a 405, not 404
 
     db.session.commit()
 
