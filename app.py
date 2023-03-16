@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
 
@@ -40,9 +40,15 @@ def add_new_user():
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
     image_url = request.form["image-url"]
+
+    if not first_name:
+        flash('You must enter a first name')
+        return redirect("/users/new")
+
     new_user = User(first_name=first_name, last_name=last_name, image_url=image_url)
     db.session.add(new_user)
     db.session.commit()
+
     return redirect("/users")
 
 @app.get("/users/<int:user_id>")
@@ -50,15 +56,39 @@ def show_user_info(user_id):
     """Shows info for a given user, button to edit and
     button to delete"""
 
+    user = User.query.filter(User.id == user_id).one()
+    return render_template('user_detail.html', user=user)
+
 @app.get("/users/<int:user_id>/edit")
 def show_edit_user_page(user_id):
     """Shows edit page for a given user, button to cancel, button to save"""
+
+    user = User.query.filter(User.id == user_id).one()
+    return render_template('edit_user.html', user=user)
 
 @app.post("/users/<int:user_id>/edit")
 def submit_edit_user_form(user_id):
     """Submits and updates user information, redirects to /users"""
 
+    user = User.query.filter(User.id == user_id).one()
+
+    user.first_name = request.form["first-name"]
+    user.last_name = request.form["last-name"]
+    user.image_url = request.form["image-url"]
+
+    db.session.commit()
+
+    return redirect('/users')
+
 @app.post("/users/<int:user_id>/delete")
 def delete_user(user_id):
     """Deletes a given user"""
+
+    User.query.filter(User.id == user_id).delete()
+
+    db.session.commit()
+
+    return redirect('/users')
+
+
 

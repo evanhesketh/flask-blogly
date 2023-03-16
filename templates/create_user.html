@@ -6,6 +6,10 @@
 
 <h1>Create a user</h1>
 
+{% for msg in get_flashed_messages() %}
+  <div>{{msg}}</div>
+{% endfor %}
+
 <form action="" method="POST">
   <div>
     <label for="first-name">First Name</label>
