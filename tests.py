@@ -5,7 +5,7 @@ os.environ["DATABASE_URL"] = "postgresql:///blogly_test"
 from unittest import TestCase
 
 from app import app, db
-from models import DEFAULT_IMAGE_URL, User
+from models import User
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -60,3 +60,27 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
+
+    def test_show_add_user(self):
+        """Tests that the add user form appears"""
+        with self.client as c:
+            resp = c.get("/users/new")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("<!-- TEST: CREATE USER FORM -->", html)
+
+    def test_user_added(self):
+        """Tests that user added to db"""
+        with self.client as c:
+            c.post('/users/new', data={"first-name": "Tester", "last-name": "Testerino", "image-url": 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s'})
+            self.assertTrue(User.query.filter(User.first_name == "Tester").count() == 1)
+            self.assertTrue(User.query.filter(User.last_name == "Testerino").count() == 1)
+            self.assertTrue(User.query.filter(User.image_url == "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s").count() == 1)
+
+    def test_user_edit(self):
+        """Tests that a user's info is edited"""
+        with self.client as c:
+            c.post(f"users/{self.user_id}/edit", data={"first-name": "Tester", "last-name": "Testerino", "image-url": 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s'})
+            self.assertTrue(User.query.filter(User.first_name == "Tester").count() == 1)
+            self.assertTrue(User.query.filter(User.last_name == "Testerino").count() == 1)
+            self.assertTrue(User.query.filter(User.image_url == "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s").count() == 1)

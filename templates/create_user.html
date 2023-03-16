@@ -6,11 +6,13 @@
 
 <h1>Create a user</h1>
 
+<!-- TEST: CREATE USER FORM -->
+
 {% for msg in get_flashed_messages() %}
   <div>{{msg}}</div>
 {% endfor %}
 
-<form action="" method="POST">
+<form id="create-user-form" action="/users/new" method="POST">
   <div>
     <label for="first-name">First Name</label>
     <input type="text" id="first-name" name="first-name">
