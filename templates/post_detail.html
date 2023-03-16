@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}{{post.title}}{% endblock %}
+
+{% block content %}
+
+<h1>{{post.title}}</h1>
+
+<p>{{post.content}}</p>
+
+<i>By {{post.user.get_full_name()}}</i>
+
+<a href="/posts">
+  <button>Cancel</button>
+</a>
+<a href="/users/{{post.user.id}}/posts/{{post.id}}/edit">
+  <button>Edit</button>
+</a>
+<form action="ADD ROUTE" method="POST">
+  <button>Delete</button>
+</form>
+
+{% endblock %}

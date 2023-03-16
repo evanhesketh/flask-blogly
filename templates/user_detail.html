@@ -10,4 +10,16 @@
 <a href="/users/{{user.id}}/edit"><button id="user-edit">Edit</button></a>
 <form action="/users/{{user.id}}/delete" method="POST"><button id="user-delete">Delete</button></form>
 
+<h2>Posts</h2>
+
+<ul class="posts-list">
+  {% for post in user.posts %}
+  <li class="post-list-elem"><a href="/posts/{{post.id}}">{{post.title}}</a></li>
+  {% endfor %}
+</ul>
+
+<a href="/users/{{user.id}}/posts/new">
+  <button>Add post</button>
+</a>
+
 {% endblock %}

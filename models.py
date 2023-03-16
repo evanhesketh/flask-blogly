@@ -67,7 +67,7 @@ class Post(db.Model):
 
     created_at = db.Column(
         db.DateTime(timezone = True),
-        nullable = False)
+        nullable = True)
 
     user_id = db.Column(
         db.Integer,
