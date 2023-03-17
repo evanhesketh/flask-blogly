@@ -87,16 +87,18 @@ class UserViewTestCase(TestCase):
 
         with self.client as c:
             #no need for new instance, could create data dictionary outside of c.post
-            new_user = User(
-            first_name="test2_first",
-            last_name="test2_last",
-            image_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s",
-            )
+            new_user = {
+            "first-name": "test2_first",
+            "last-name": "test2_last",
+            "image-url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s"
+            }
             #test final redirect page instead
-            c.post('/users/new', data={"first-name": new_user.first_name, "last-name": new_user.last_name, "image-url": new_user.image_url })
-            self.assertTrue(User.query.filter(User.first_name == "test2_first").count() == 1)
-            self.assertTrue(User.query.filter(User.last_name == "test2_last").count() == 1)
-            self.assertTrue(User.query.filter(User.image_url == "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s").count() == 1)
+            resp = c.post('/users/new',
+                          data=new_user, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('test2_first', html)
 
     def test_user_edit(self):
         """Tests that a user's info is edited in database"""
