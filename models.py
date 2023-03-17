@@ -37,7 +37,7 @@ class User(db.Model):
 
     image_url = db.Column(
         db.Text,
-        default = DEFAULT_IMG_URL
+        default=DEFAULT_IMG_URL
     )
 
     def get_full_name(self):
@@ -65,15 +65,19 @@ class Post(db.Model):
         db.Text,
         nullable = False)
 
+    # default = datetime.datetime.now
+
     created_at = db.Column(
-        db.DateTime(timezone = True),
-        nullable = True)
+        db.DateTime,
+        nullable = False,
+        default = db.func.now())
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('users.id'))
+        db.ForeignKey('users.id')) # Make nullable = false
 
     user = db.relationship('User', backref='posts')
+
 
 
 

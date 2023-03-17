@@ -113,18 +113,20 @@ def delete_user(user_id):
 
     return redirect('/users')
 
-
+################################################################################
 # Post routes
 
 @app.get("/users/<int:user_id>/posts/new")
 def show_add_post_form(user_id):
     """Shows add post form"""
+
     user = User.query.get_or_404(user_id)
     return render_template("new_post.html", user=user)
 
 @app.post("/users/<int:user_id>/posts/new")
 def add_post(user_id):
     """Adds post and redirects to user detail page"""
+
     user = User.query.get_or_404(user_id)
 
     title = request.form["title"]
@@ -132,7 +134,7 @@ def add_post(user_id):
 
     if not title or not content:
         flash("Posts must contain a title and text content")
-        return render_template("new_post.html", user=user)
+        return render_template("new_post.html", user=user, content=content, title=title)
 
 
     new_post = Post(title=title, content=content, user_id=user_id)
@@ -145,6 +147,7 @@ def add_post(user_id):
 @app.get("/posts/<int:post_id>")
 def show_post_details(post_id):
     """Shows post details page"""
+
     post = Post.query.get_or_404(post_id)
     return render_template("post_detail.html", post=post)
 
@@ -168,6 +171,9 @@ def submit_post_edit_form(post_id):
     if not title or not content:
         flash("Posts must contain a title and text content")
         return render_template("edit_post.html", post=post)
+
+    post.title = title
+    post.content = content
 
     db.session.commit()
 

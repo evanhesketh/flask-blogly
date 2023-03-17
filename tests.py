@@ -59,6 +59,8 @@ class UserViewTestCase(TestCase):
         db.session.add(test_post)
         db.session.commit()
 
+        self.post_id = test_post.id
+
     def tearDown(self):
         """Clean up any fouled transaction."""
         db.session.rollback()
@@ -84,13 +86,13 @@ class UserViewTestCase(TestCase):
         """Tests that user added to db"""
 
         with self.client as c:
-
+            #no need for new instance, could create data dictionary outside of c.post
             new_user = User(
             first_name="test2_first",
             last_name="test2_last",
             image_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbaLhYs-hfYG1RaqOYxLbsF-wmxK3fG51xl9TKuHKHmw&s",
             )
-
+            #test final redirect page instead
             c.post('/users/new', data={"first-name": new_user.first_name, "last-name": new_user.last_name, "image-url": new_user.image_url })
             self.assertTrue(User.query.filter(User.first_name == "test2_first").count() == 1)
             self.assertTrue(User.query.filter(User.last_name == "test2_last").count() == 1)
@@ -121,3 +123,33 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
             self.assertIn('Title_test', html)
+
+    def test_add_post(self):
+        """Tests new post functionality."""
+
+        with self.client as c:
+            c.post(f"users/{self.user_id}/posts/new",
+                          data={"title":
+                                "Test post 2",
+                                "content": "Test content 2"})
+            self.assertTrue(Post.query.filter(Post.title == "Test post 2").count() == 1)
+            self.assertTrue(Post.query.filter(Post.content == "Test content 2").count() == 1)
+
+    def test_edit_post(self):
+        """Tests that a post can be edited."""
+        with self.client as c:
+            c.post(f"posts/{self.post_id}/edit",
+                          data={"title": "Post title edited",
+                                "content": "Post content edited"})
+            curr_post = Post.query.filter(Post.title == "Post title edited").first()
+            self.assertTrue(curr_post.user_id == self.user_id)
+            self.assertTrue(Post.query.filter(Post.content == "Post content edited").count() == 1)
+
+    def test_delete_post(self):
+        """Tests a post's delete functionality"""
+
+        with self.client as c:
+            c.post(f"posts/{self.post_id}/delete")
+            self.assertTrue(Post.query.filter(Post.id == self.post_id).count() == 0)
+
+

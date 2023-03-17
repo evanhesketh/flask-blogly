@@ -13,13 +13,13 @@
 <form action="/users/{{user.id}}/posts/new" method="POST">
   <div>
     <label for="title">Title: </label>
-    <input id="title" name="title" type="text">
+    <input id="title" name="title" type="text" value="{{title}}">
   </div>
 
   <div>
     <label for="content">Content: </label>
     <textarea id="content" name="content" type="text">
-
+      {{content}}
     </textarea>
   </div>
   <button type="submit">Add</button>
